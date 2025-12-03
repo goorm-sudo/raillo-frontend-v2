@@ -53,7 +53,7 @@ const Breadcrumb = () => {
   };
   const breadcrumbs = getBreadcrumbs();
   return (
-    <div>
+    <>
       {breadcrumbs.length > 1 && (
         <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
           {breadcrumbs.map((breadcrumb, index) => (
@@ -77,7 +77,7 @@ const Breadcrumb = () => {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { tokenManager } from "@/lib/auth";
 import HeaderAuthBtn from "../Header/HeaderAuthBtn";
+import Breadcrumb from "./Breadcrumb";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,6 +44,7 @@ export default function Header() {
               <Train className="h-8 w-8 text-blue-600" />
               <h1 className="text-2xl font-bold text-blue-600">RAIL-O</h1>
             </Link>
+            <Breadcrumb />
           </div>
 
           {/* 오른쪽: 네비게이션과 카테고리 버튼 */}
