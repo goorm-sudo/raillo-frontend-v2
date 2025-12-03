@@ -2,36 +2,14 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  ShoppingCart,
-  User,
-  Menu,
-  X,
-  CreditCard,
-  Ticket,
-  Search,
-  MapPin,
-} from "lucide-react";
+import { X, CreditCard, Ticket, Search, MapPin } from "lucide-react";
 import { tokenManager } from "@/lib/auth";
-import HeaderAuthBtn from "../Header/HeaderAuthBtn";
 import HeaderBrand from "./HeaderBrand";
+import HeaderActions from "./HeaderActions";
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    // 페이지 로드 시에만 토큰 상태 갱신 (새로고침 시에만 동작)
-    const initAuth = async () => {
-      const isAuth = await tokenManager.initializeAuth();
-      setIsLoggedIn(isAuth);
-    };
-
-    initAuth();
-  }, []);
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-40">
@@ -41,58 +19,7 @@ export default function Header() {
           <HeaderBrand />
 
           {/* 오른쪽: 네비게이션과 카테고리 버튼 */}
-          <div className="flex items-center space-x-4 ml-auto">
-            <nav className="hidden md:flex items-center space-x-4">
-              <HeaderAuthBtn />
-              {isLoggedIn ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center space-x-2"
-                    onClick={async () => {
-                      router.push("/cart");
-                    }}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    <span>장바구니</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center space-x-2"
-                    onClick={async () => {
-                      router.push("/mypage");
-                    }}
-                  >
-                    <User className="h-4 w-4" />
-                    <span>마이페이지</span>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/cart">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center space-x-2"
-                    >
-                      <ShoppingCart className="h-4 w-4" />
-                      <span>장바구니</span>
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </nav>
-            {/* 카테고리 메뉴 버튼 */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowSidebar(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-          </div>
+          <HeaderActions />
         </div>
       </div>
       {/* 사이드바 오버레이 */}
