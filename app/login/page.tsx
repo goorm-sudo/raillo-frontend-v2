@@ -1,10 +1,31 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import LoginHeader from "./_components/LoginHeader";
 import LoginField from "./_components/LoginField";
 import LoginHelpLinks from "./_components/LoginHelpLinks";
 import { CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
+import { redirect } from "next/navigation";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function LoginPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth({
+    requireAuth: true,
+  });
+
+  if (authLoading) {
+    return (
+      <div className="py-10 flex justify-center items-center w-full min-h-[60vh]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return redirect("/");
+  }
+
   return (
     <div className="py-10 flex justify-center items-center w-full">
       <Card className="bg-white shadow-lg w-full max-w-md">
