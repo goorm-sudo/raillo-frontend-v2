@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { tokenManager } from "@/lib/auth";
 import { login } from "@/lib/api/auth";
@@ -15,7 +15,6 @@ const LoginField = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [memberNumber, setMemberNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const router = useRouter();
   const memberNumberInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,31 +27,6 @@ const LoginField = () => {
       localStorage.removeItem("signupMemberNo");
     }
   }, []);
-
-  // 컴포넌트 마운트 시 회원번호 입력란에 자동 포커스
-  useEffect(() => {
-    // 약간의 지연을 두어 DOM이 완전히 렌더링된 후 포커스
-    const timer = setTimeout(() => {
-      memberNumberInputRef.current?.focus();
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // 로그인 상태 체크 - useCallback으로 최적화
-  const checkAuth = useCallback(() => {
-    const authenticated = tokenManager.isAuthenticated();
-    setIsLoggedIn(authenticated);
-
-    if (authenticated) {
-      // 이미 로그인된 경우 메인 페이지로 리다이렉트
-      router.push("/");
-    }
-  }, [router]);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   const handleMemberLogin = async (e?: React.FormEvent) => {
     e?.preventDefault(); // form 제출 시 기본 동작 방지
