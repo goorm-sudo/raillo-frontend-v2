@@ -1,156 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { login } from "@/lib/api/auth";
-import { tokenManager } from "@/lib/auth";
-import { handleError } from "@/lib/utils/errorHandler";
-import { Eye, EyeOff, Lock, User } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
 import LoginHeader from "./LoginHeader";
 import SignupGuide from "./SignupGuide";
+import LoginField from "./LoginField";
 
 const LoginForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [memberNumber, setMemberNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const router = useRouter();
-
-  // 로그인 상태 체크 - useCallback으로 최적화
-  const checkAuth = useCallback(() => {
-    const authenticated = tokenManager.isAuthenticated();
-    setIsLoggedIn(authenticated);
-
-    if (authenticated) {
-      // 이미 로그인된 경우 메인 페이지로 리다이렉트
-      router.push("/");
-    }
-  }, [router]);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  // 페이지 로드 시 localStorage에서 회원번호 가져오기
-  useEffect(() => {
-    const storedMemberNo = localStorage.getItem("signupMemberNo");
-    if (storedMemberNo) {
-      setMemberNumber(storedMemberNo);
-      // 회원번호를 가져온 후 localStorage에서 삭제
-      localStorage.removeItem("signupMemberNo");
-    }
-  }, []);
-
-  const handleMemberLogin = async () => {
-    if (!memberNumber || !password) {
-      alert("회원번호와 비밀번호를 모두 입력해주세요.");
-      return;
-    }
-
-    if (isLoading) return; // 중복 클릭 방지
-
-    setIsLoading(true);
-
-    try {
-      const response = await login({ memberNo: memberNumber, password });
-
-      if (response.result) {
-        // accessToken을 sessionStorage에 저장 (refreshToken은 백엔드에서 HttpOnly 쿠키로 설정)
-        tokenManager.setLoginTokens(
-          response.result.accessToken,
-          response.result.accessTokenExpiresIn
-        );
-      }
-    } catch (error: any) {
-      handleError(error, "로그인에 실패했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
   return (
     <div className="w-full max-w-md">
       <Card className="bg-white shadow-lg">
         <LoginHeader />
         <CardContent>
           {/* 회원번호 로그인 */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="memberNumber"
-                className="text-sm font-medium text-gray-700"
-              >
-                회원번호
-              </Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="memberNumber"
-                  type="text"
-                  placeholder="회원번호를 입력하세요"
-                  value={memberNumber}
-                  onChange={(e) => setMemberNumber(e.target.value)}
-                  className="pl-10"
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="password"
-                className="text-sm font-medium text-gray-700"
-              >
-                비밀번호
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="비밀번호를 입력하세요"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleMemberLogin}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
-              size="lg"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  로그인 중...
-                </div>
-              ) : (
-                "로그인"
-              )}
-            </Button>
-          </div>
-
+          <LoginField />
           {/* 찾기 및 회원가입 링크 */}
           <div className="mt-6">
             <div className="flex justify-center space-x-4 text-sm">
