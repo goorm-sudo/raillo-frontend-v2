@@ -1,23 +1,33 @@
 "use client";
 
-import Link from "next/link";
 import { LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { tokenManager } from "@/lib/auth";
 import { logout } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import Link from "next/link";
 
 const HeaderAuthBtn = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const router = useRouter();
-  useEffect(() => {
-    const initAuth = async () => {
-      const isAuth = await tokenManager.initializeAuth();
-      setIsLoggedIn(isAuth);
-    };
 
-    initAuth();
+  useEffect(() => {
+    // 먼저 동기적으로 빠르게 체크 (sessionStorage 확인)
+    const quickCheck = tokenManager.isAuthenticated();
+    setIsLoggedIn(quickCheck);
+
+    // 그 다음 비동기로 refreshToken까지 확인
+    tokenManager
+      .initializeAuth()
+      .then((isAuth) => {
+        setIsLoggedIn(isAuth);
+      })
+      .catch((error) => {
+        console.error("토큰 초기화 에러:", error);
+        setIsLoggedIn(false);
+      });
   }, []);
 
   // 로그아웃 함수
@@ -42,6 +52,15 @@ const HeaderAuthBtn = () => {
   const updateLoginStatus = () => {
     setIsLoggedIn(tokenManager.isAuthenticated());
   };
+
+  // 로딩 중이면 스피너 표시
+  if (isLoggedIn === null) {
+    return (
+      <div className="flex items-center space-x-2">
+        <LoadingSpinner size="sm" />
+      </div>
+    );
+  }
 
   if (isLoggedIn) {
     return (
